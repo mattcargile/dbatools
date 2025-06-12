@@ -105,7 +105,7 @@ function Update-ServiceStatus {
         foreach ($service in $servicesToRestart) {
             if ($Pscmdlet.ShouldProcess("Sending $action request to service $($service.ServiceName) on $($service.ComputerName)")) {
                 #Invoke corresponding CIM method
-                $invokeResult = Invoke-CimMethod -InputObject $service._CimObject -MethodName $methodName
+                $invokeResult = Invoke-CimMethod -InputObject $service._CimObject -MethodName $methodName -CimSession (New-CimSession -ComputerName $service.ComputerName -Credential $service._CimCredential)
                 $invokeResults += [psobject]@{
                     InvokeResult    = $invokeResult
                     ServiceState    = $invokeResult.State
@@ -197,6 +197,7 @@ process {
         foreach ($service in $group.Group) {
             if ($cimObject = ($svcCim | Where-Object Name -eq $service.ServiceName)) {
                 Add-Member -Force -InputObject $service -NotePropertyName _CimObject -NotePropertyValue $cimObject
+                Add-Member -Force -InputObject $service -NotePropertyName _CimCredential -NotePropertyValue $Credential
             } else {
                 Stop-Function -Message "Failed to retrieve service name $($service.ServiceName) from the CIM object collection - the service will not be processed" -Continue -Target $group.Name
             }

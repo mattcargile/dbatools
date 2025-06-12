@@ -138,7 +138,7 @@ function Stop-DbaService {
         }
         if ($PSCmdlet.ShouldProcess("$ProcessArray", "Stopping Service")) {
             if ($processArray) {
-                Update-ServiceStatus -InputObject $processArray -Action 'stop' -Timeout $Timeout -EnableException $EnableException
+                Update-ServiceStatus -InputObject $processArray -Action 'stop' -Timeout $Timeout -EnableException $EnableException -Credential $Credential
             } else {
                 Stop-Function -EnableException $EnableException -Message "No SQL Server services found with current parameters." -Category ObjectNotFound
             }
